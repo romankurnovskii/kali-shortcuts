@@ -2,7 +2,7 @@
 # execute on first kali setup
 
 sudo apt update -y
-sudo apt upgrade -y
+sudo apt full-upgrade -y
 
 echo "====================="
 sudo apt install -y \
