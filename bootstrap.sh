@@ -15,66 +15,72 @@ sudo apt install -y \
     etherape qbittorrent
 
 echo "====================="
-echo "Installing app managers"
-sudo apt install -y flatpack \
-    gnome-software-plugin-flatpak plasma-discover-backend-flatpak
-flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-
-echo "====================="
-sudo apt install -y snapd
-sudo snap install snapd
-sudo snap install snap-store
 
 # Get the username of the user who invoked sudo
 USER_NAME=$(logname)
+WORKSPACE=/home/"$USER_NAME"/w/
 
-mkdir -p ~/w/
-
-echo "====================="
-cd ~/w/
-sudo -u "$USER_NAME" git clone https://github.com/romankurnovskii/kali-shortcuts.git
-chmod -R +x kali-shortcuts/
-cd kali-shortcuts
-sudo ./set_nameserver.sh
-sudo ./disable_ipv6.sh
-sudo ./disable_autoconnect.sh
-sudo ./install_vpn.sh all
+mkdir -p $WORKSPACE
 
 echo "====================="
-cd ~/w/
-sudo -u "$USER_NAME" git clone https://github.com/Und3rf10w/kali-anonsurf.git
-cd kali-anonsurf
-sudo ./installer.sh
-# Pandora automatically overwrites the RAM when the system is shutting down
-# This will clear the entire system cache, including active SSH tunnels or sessions.
-pandora bomb
-anonsurf status
-echo "Usage: anonsurf {start|stop|restart|change|status}"
+cd $WORKSPACE
+rm -rf "$WORKSPACE/kali-shortcuts"
+sudo -u "$USER_NAME" git clone https://github.com/romankurnovskii/kali-shortcuts.git "$WORKSPACE/kali-shortcuts"
+chmod -R +x "$WORKSPACE/kali-shortcuts/"
+cd "$WORKSPACE/kali-shortcuts"
+sudo ./setup_network.sh
 
-echo "====================="
-cd ~/w/
-sudo -u "$USER_NAME" git clone https://github.com/slingamn/namespaced-openvpn.git
-echo "namespaced-openvpn downloaded. Example of command to run from terminal: 'sudo /path/to/namespaced-openvpn --config ./my_openvpn_config_file'"
+INSTALL_VPN=false
+INSTALL_BROWSERS=false
+INSTALL_MESSENGERS=false
+INSTALL_WHONIX=false
 
-# Install Librewolf browser
-echo "====================="
-echo "Installing Librewolf browser"
-sudo apt update && sudo apt install -y wget gnupg lsb-release apt-transport-https ca-certificates
+for arg in "$@"; do
+    case $arg in
+    vpn=*)
+        VPN=${arg#*=}
+        INSTALL_VPN=true
+        ;;
+    browser=*)
+        BROWSER=${arg#*=}
+        INSTALL_BROWSERS=true
+        ;;
+    messenger=*)
+        MESSENGER=${arg#*=}
+        INSTALL_MESSENGERS=true
+        ;;
+    whonix)
+        INSTALL_WHONIX=true
+        ;;
+    all)
+        INSTALL_VPN=true
+        INSTALL_BROWSERS=true
+        INSTALL_MESSENGERS=true
+        INSTALL_WHONIX=true
+        VPN=all
+        BROWSER=all
+        MESSENGER=all
+        ;;
+    *)
+        echo "Unknown option $arg"
+        ;;
+    esac
+done
 
-distro=$(if echo " una bookworm vanessa focal jammy bullseye vera uma " | grep -q " $(lsb_release -sc) "; then lsb_release -sc; else echo focal; fi)
+if [ "$INSTALL_VPN" = true ]; then
+    sudo ./install_vpn.sh $VPN
+fi
 
-wget -O- https://deb.librewolf.net/keyring.gpg | sudo gpg --dearmor -o /usr/share/keyrings/librewolf.gpg
+if [ "$INSTALL_BROWSERS" = true ]; then
+    sudo ./install_browsers.sh $BROWSER
+fi
 
-sudo tee /etc/apt/sources.list.d/librewolf.sources <<EOF >/dev/null
-Types: deb
-URIs: https://deb.librewolf.net
-Suites: $distro
-Components: main
-Architectures: amd64
-Signed-By: /usr/share/keyrings/librewolf.gpg
-EOF
+if [ "$INSTALL_MESSENGERS" = true ]; then
+    sudo ./install_messengers.sh $MESSENGER
+fi
 
-sudo apt update
-sudo apt install -y librewolf
+if [ "$INSTALL_WHONIX" = true ]; then
+    sudo ./install_whonix.sh
+fi
 
 sudo apt autoremove -y
