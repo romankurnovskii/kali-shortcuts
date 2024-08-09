@@ -18,14 +18,16 @@ install_element() {
 }
 
 install_session() {
-    sudo snap install session-desktop
+    # sudo ./install_app_managers.sh
+    # sudo snap install session-desktop
 
     # also install from repo: steps here https://deb.oxen.io/
     # sudo curl -so /etc/apt/trusted.gpg.d/oxen.gpg https://deb.oxen.io/pub.gpg
+    # kali-roling not supported
     # echo "deb https://deb.oxen.io $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/oxen.list
-    # sudo apt update
-    # sudo apt install session-desktop
-    # sudo apt install oxen-electron-wallet
+    echo "deb https://deb.oxen.io sid main" | sudo tee /etc/apt/sources.list.d/oxen.list
+    sudo apt update
+    sudo apt install -y session-desktop oxen-electron-wallet
 }
 
 install_all() {
