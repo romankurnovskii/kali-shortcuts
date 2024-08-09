@@ -80,7 +80,7 @@ if [ "$INSTALL_MESSENGERS" = true ]; then
 fi
 
 if [ "$INSTALL_WHONIX" = true ]; then
-    sudo ./install_whonix.sh
+    ./install_whonix.sh
 fi
 
 sudo apt autoremove -y
