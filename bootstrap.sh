@@ -7,6 +7,7 @@ sudo apt full-upgrade -y
 echo "====================="
 sudo apt install -y \
     secure-delete \
+    keepassxc \
     tor \
     torbrowser-launcher \
     pidgin pidgin-otr \

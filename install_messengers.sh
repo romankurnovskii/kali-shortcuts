@@ -22,7 +22,7 @@ install_session() {
     # sudo snap install session-desktop
 
     # also install from repo: steps here https://deb.oxen.io/
-    # sudo curl -so /etc/apt/trusted.gpg.d/oxen.gpg https://deb.oxen.io/pub.gpg
+    sudo curl -so /etc/apt/trusted.gpg.d/oxen.gpg https://deb.oxen.io/pub.gpg
     # kali-roling not supported
     # echo "deb https://deb.oxen.io $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/oxen.list
     echo "deb https://deb.oxen.io sid main" | sudo tee /etc/apt/sources.list.d/oxen.list

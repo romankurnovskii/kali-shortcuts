@@ -19,5 +19,7 @@ sudo ./bootstrap.sh all
 # Install Specific VPN and Browser:
 sudo ./bootstrap.sh vpn=mullvad browser=librewolf
 
+sudo ./bootstrap.sh vpn=all browser=all messenger=all
+
 sudo ./bootstrap.sh whonix
 ```
